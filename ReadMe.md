@@ -1,11 +1,30 @@
 # SmartDNS
 
+**[English](ReadMe_en.md)**
+
 ![SmartDNS](doc/smartdns-banner.png)  
 SmartDNS是一个运行在本地的DNS服务器，SmartDNS接受本地客户端的DNS查询请求，从多个上游DNS服务器获取DNS查询结果，并将访问速度最快的结果返回给客户端，避免DNS污染，提高网络访问速度。
 同时支持指定特定域名IP地址，并高性匹配，达到过滤广告的效果。  
-与dnsmasq的all-servers不同，smartdns返回的是访问速度最快的解析结果。  
+与dnsmasq的all-servers不同，smartdns返回的是访问速度最快的解析结果。 (详细差异请看[FAQ](#faq)) 
 
-支持树莓派，openwrt，华硕路由器等设备。  
+支持树莓派，openwrt，华硕路由器，windows等设备。  
+
+## 目录
+
+1. [软件效果展示](#软件效果展示)
+1. [特性](#特性)
+1. [架构](#架构)
+1. [使用](#使用)  
+    1. [下载配套安装包](#下载配套安装包)
+    1. [标准Linux系统安装](#标准linux系统安装树莓派x86_64系统)
+    1. [openwrt/LEDE](#openwrtlede)
+    1. [华硕路由器原生固件/梅林固件](#华硕路由器原生固件梅林固件)
+    1. [optware/entware](#optwareentware)
+    1. [Windows 10 WSL安装/WSL ubuntu](#windows-10-wsl安装wsl-ubuntu)
+1. [配置参数](#配置参数)
+1. [捐助](#donate)
+1. [声明](#声明)
+1. [FAQ](#faq)
 
 ## 软件效果展示
 
@@ -73,25 +92,28 @@ rtt min/avg/max/mdev = 5.954/6.133/6.313/0.195 ms
 1. **多DNS上游服务器**  
    支持配置多个上游DNS服务器，并同时进行查询，即使其中有DNS服务器异常，也不会影响查询。  
 
-2. **返回最快IP地址**  
+1. **返回最快IP地址**  
    支持从域名所属IP地址列表中查找到访问速度最快的IP地址，并返回给客户端，避免DNS污染，提高网络访问速度。
 
-3. **支持多种查询协议**  
-   支持UDP，TCP，TLS查询，以及非53端口查询，有效避免DNS污染。
+1. **支持多种查询协议**  
+   支持UDP，TCP，TLS, HTTPS查询，以及非53端口查询，有效避免DNS污染。
 
-4. **特定域名IP地址指定**  
+1. **特定域名IP地址指定**  
    支持指定域名的IP地址，达到广告过滤效果，避免恶意网站的效果。
 
-5. **域名高性能后缀匹配**  
+1. **域名高性能后缀匹配**  
    支持域名后缀匹配模式，简化过滤配置，过滤20万条记录时间<1ms
 
-6. **Linux多平台支持**  
-   支持标准Linux系统（树莓派），openwrt系统各种固件，华硕路由器原生固件。
+1. **域名分流**  
+   支持域名分流，不同类型的域名到不同的DNS服务器查询。
 
-7. **支持IPV4, IPV6双栈**  
-   支持IPV4，IPV6网络，支持查询A, AAAA记录，支持双栈IP速度优化。
+1. **Linux/Windows多平台支持**  
+   支持标准Linux系统（树莓派），openwrt系统各种固件，华硕路由器原生固件。以及支持Windows 10 WSL (Windows Subsystem for Linux)。
 
-8. **高性能，占用资源少**  
+1. **支持IPV4, IPV6双栈**  
+   支持IPV4，IPV6网络，支持查询A, AAAA记录，支持双栈IP速度优化，并支持完全禁用IPV6 AAAA解析。
+
+1. **高性能，占用资源少**  
    多线程异步IO模式，cache缓存查询结果。
 
 ## 架构
@@ -114,11 +136,13 @@ rtt min/avg/max/mdev = 5.954/6.133/6.313/0.195 ms
 |系统 |安装包|说明
 |-----|-----|-----
 |标准Linux系统(树莓派)| smartdns.xxxxxxxx.armhf.deb|支持树莓派Raspbian stretch，Debian 9系统。
-|标准Linux系统(x86_64)| smartdns.xxxxxxxx.x86_64.tar.gz|支持x86_64系统。
+|标准Linux系统(Armbian arm64)| smartdns.xxxxxxxx.arm64.deb|支持ARM64的Debian stretch，Debian 9系统。
+|标准Linux系统(x86_64)| smartdns.xxxxxxxx.x86_64.tar.gz|支持x86_64 Linux 系统。
+|Windows 10 WSL (ubuntu)| smartdns.xxxxxxxx.x86_64.tar.gz|支持Windows 10 WSL ubuntu系统。
 |标准Linux系统(x86)| smartdns.xxxxxxxx.x86.tar.gz|支持x86系统。
 |华硕原生固件(optware)|smartdns.xxxxxxx.mipsbig.ipk|支持MIPS大端架构的系统，如RT-AC55U, RT-AC66U.
-|华硕原生固件(optware)|smartdns.xxxxxxx.mipsel.ipk|支持MIPS小端架构的系统，如RT-AC68U。
-|华硕原生固件(optware)|smartdns.xxxxxxx.arm.ipk|支持arm小端架构的系统，如RT-AC88U。
+|华硕原生固件(optware)|smartdns.xxxxxxx.mipsel.ipk|支持MIPS小端架构的系统。
+|华硕原生固件(optware)|smartdns.xxxxxxx.arm.ipk|支持arm小端架构的系统，如RT-AC68U。
 |Padavan|smartdns.xxxxxxx.mipselsf.ipk|padavan固件。
 |openwrt 15.01|smartdns.xxxxxxxx.ar71xx.ipk|支持AR71XX MIPS系统。
 |openwrt 15.01|smartdns.xxxxxxxx.ramips_24kec.ipk|支持MT762X等小端路由器
@@ -141,9 +165,46 @@ rtt min/avg/max/mdev = 5.954/6.133/6.313/0.195 ms
     src/gz chaos_calmer_base http://downloads.openwrt.org/chaos_calmer/15.05/ar71xx/generic/packages/base
     ```
 
-    请在Release页面下载：[此处下载](https://github.com/pymumu/smartdns/releases)
+* 或ssh登录系统后通过如下命令查询软件架构：
 
-### 标准Linux系统安装（树莓派, X86_64系统）
+  * **openwrt系列命令**
+
+    ```shell
+    opkg print_architecture
+    ```
+
+  * **optware系列命令**
+
+    ```shell
+    ipkg print_architecture
+    ```
+
+  * **debian系列命令**
+
+    ```shell
+    dpkg --print-architecture
+    ```
+
+  * **例如**
+
+    下面的查询结果`arch ar71xx 10`表示ar71xx系列架构，选择`smartdns.xxxxxxxx.ar71xx.ipk`安装包
+
+    ```shell
+    root@OpenWrt:~# opkg print_architecture
+    arch all 1
+    arch noarch 1
+    arch ar71xx 10
+    ```
+
+* **请在Release页面下载：[点击此处下载](https://github.com/pymumu/smartdns/releases)**
+
+```shell
+https://github.com/pymumu/smartdns/releases
+```
+
+* 各种设备的安装步骤，请参考后面的章节。
+
+### 标准Linux系统安装/树莓派/X86_64系统
 
 --------------
 
@@ -153,6 +214,15 @@ rtt min/avg/max/mdev = 5.954/6.133/6.313/0.195 ms
 
     ```shell
     dpkg -i smartdns.xxxxxxxx.armhf.deb
+    ```
+
+    x86系统下载配套安装包`smartdns.xxxxxxxx.x86-64.tar.gz`, 并上传到Linux系统中。 执行如下命令安装
+
+    ```shell
+    tar zxf smartdns.xxxxxxxx.x86-64.tar.gz
+    cd smartdns
+    chmod +x ./install
+    ./install -i
     ```
 
 1. 修改配置
@@ -249,6 +319,7 @@ rtt min/avg/max/mdev = 5.954/6.133/6.313/0.195 ms
         ```shell
         iptables -t nat -L PREROUTING | grep REDIRECT
         ```
+
         * 如转发功能不正常，请使用方法二：作为DNSMASQ的上游。
 
 1. 方法二：作为DNSMASQ的上游
@@ -369,9 +440,108 @@ rtt min/avg/max/mdev = 5.954/6.133/6.313/0.195 ms
     \\192.168.1.1\sda1\asusware.mipsbig\etc\init.d
     ```
 
+### optware/entware
+
+--------------
+
+1. 准备
+
+    在使用此软件时，需要确认路由器是否支持U盘，并准备好U盘一个。
+
+1. 安装SmartDNS
+
+    将软件使用winscp上传到路由器的`/tmp`目录。
+
+    ```shell
+    ipkg install smartdns.xxxxxxx.mipsbig.ipk
+    ```
+
+1. 修改smartdns配置
+
+    ```shell
+    vi /opt/etc/smartdns/smartdns.conf
+    ```
+
+    另外，如需支持IPV6，可设置工作模式为`2`，将dnsmasq的DNS服务禁用，smartdns为主用DNS服务器。将文件`/opt/etc/smartdns/smartdns-opt.conf`，中的`SMARTDNS_WORKMODE`修改为2.
+
+    ```shell
+    SMARTDNS_WORKMODE="2"
+    ```
+
+1. 重启路由器生效服务
+
+    待路由器启动后，使用`nslookup -querytype=ptr 0.0.0.0`查询域名  
+    看命令结果中的`name`项目是否显示为`smartdns`或`主机名`，如`smartdns`则表示生效  
+
+    ```shell
+    pi@raspberrypi:~/code/smartdns_build $ nslookup -querytype=ptr 0.0.0.0
+    Server:         192.168.1.1
+    Address:        192.168.1.1#53
+
+    Non-authoritative answer:
+    0.0.0.0.in-addr.arpa  name = smartdns.
+    ```
+
+    注意：若服务没有自动启动，则需要设置optwre/entware自动启动，具体方法参考optware/entware的文档。
+
+### Windows 10 WSL安装/WSL ubuntu
+
+--------------
+
+1. 安装Windows 10 WSL ubuntu系统
+
+    安装Windows 10 WSL运行环境，发行版本选择ubuntu系统。安装步骤请参考[WSL安装说明](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+
+1. 安装smartdns
+
+    下载安装包`smartdns.xxxxxxxx.x86_64.tar.gz`，并解压到D盘根目录。解压后目录如下：
+
+    ```shell
+    D:\SMARTDNS
+    ├─etc
+    │  ├─default
+    │  ├─init.d
+    │  └─smartdns
+    ├─package
+    │  └─windows
+    ├─src
+    └─systemd
+
+    ```
+
+    双击`D:\smartdns\package\windows`目录下的`install.bat`进行安装。要求输入密码时，请输入`WLS ubuntu`的密码。
+
+1. 修改配置
+
+    记事本打开`D:\smartdns\etc\smartdns`目录中的`smartdns.conf`配置文件配置smartdns。具体配置参数参考`配置参数`说明。  
+    一般情况下，只需要增加`server [IP]:port`, `server-tcp [IP]:port`配置项，
+    尽可能配置多个上游DNS服务器，包括国内外的服务器。配置参数请查看`配置参数`章节。
+
+1. 重新加载配置
+
+    双击`D:\smartdns\package\windows`目录下的`reload.bat`进行安装。要求输入密码时，请输入`WLS ubuntu`的密码。
+
+1. 将DNS请求转发的SmartDNS解析。
+
+    将Windows的默认DNS服务器修改为`127.0.0.1`，具体步骤参考[IP配置](https://support.microsoft.com/zh-cn/help/15089/windows-change-tcp-ip-settings)
+
+1. 检测服务是否配置成功。
+
+    使用`nslookup -querytype=ptr 0.0.0.0`查询域名  
+    看命令结果中的`name`项目是否显示为`smartdns`或`主机名`，如`smartdns`则表示生效  
+
+    ```shell
+    pi@raspberrypi:~/code/smartdns_build $ nslookup -querytype=ptr 0.0.0.0
+    Server:         192.168.1.1
+    Address:        192.168.1.1#53
+
+    Non-authoritative answer:
+    0.0.0.0.in-addr.arpa  name = smartdns.
+    ```
+
 ## 配置参数
 
-|参数|功能|默认值|配置值|例子|
+|参数|  功能  |默认值|配置值|例子|
 |--|--|--|--|--|
 |server-name|DNS服务器名称|操作系统主机名/smartdns|符合主机名规格的字符串|server-name smartdns
 |bind|DNS监听端口号|[::]:53|IP:PORT|bind 192.168.1.1:53
@@ -381,7 +551,7 @@ rtt min/avg/max/mdev = 5.954/6.133/6.313/0.195 ms
 |rr-ttl|域名结果TTL|远程查询结果|大于0的数字|rr-ttl 600
 |rr-ttl-min|允许的最小TTL值|远程查询结果|大于0的数字|rr-ttl-min 60
 |rr-ttl-max|允许的最大TTL值|远程查询结果|大于0的数字|rr-ttl-max 600
-|log-level|设置日志级别|error|error,warn,info,debug|log-level error
+|log-level|设置日志级别|error|fatal,error,warn,notice,info,debug|log-level error
 |log-file|日志文件路径|/var/log/smartdns.log|路径|log-file /var/log/smartdns.log
 |log-size|日志大小|128K|数字+K,M,G|log-size 128K
 |log-num|日志归档个数|2|数字|log-num 2
@@ -390,19 +560,115 @@ rtt min/avg/max/mdev = 5.954/6.133/6.313/0.195 ms
 |audit-size|审计大小|128K|数字+K,M,G|audit-size 128K
 |audit-num|审计归档个数|2|数字|audit-num 2
 |conf-file|附加配置文件|无|文件路径|conf-file /etc/smartdns/smartdns.more.conf
-|server|上游UDP DNS|无|[ip][:port] [-blacklist-ip][-check-edns]，可重复，blacklist-ip参数指定使用blacklist-ip配置IP过滤结果| server 8.8.8.8:53 -blacklist-ip -check-edns
-|server-tcp|上游TCP DNS|无|[IP][:port] [-blacklist-ip][-check-edns]，可重复，blacklist-ip参数指定使用blacklist-ip配置IP过滤结果| server-tcp 8.8.8.8:53
-|server-tls|上游TLS DNS|无|[IP][:port] [-blacklist-ip][-check-edns]，可重复，blacklist-ip参数指定使用blacklist-ip配置IP过滤结果| server-tls 8.8.8.8:853
-|address|指定域名IP地址|无|address /domain/[ip\|-\|-4\|-6\|#\|#4\|#6], `-`表示忽略, `#`表示返回SOA, `4`表示IPV4, `6`表示IPV6| address /www.example.com/1.2.3.4
+|server|上游UDP DNS|无|可重复<br>`[ip][:port]`：服务器IP，端口可选。<br>`[-blacklist-ip]`：blacklist-ip参数指定使用blacklist-ip配置IP过滤结果。<br>`[-check-edns]`：edns过滤。<br>`[-group [group] ...]`：DNS服务器所属组，比如office, foreign，和nameserver配套使用。<br>`[-exclude-default-group]`：将DNS服务器从默认组中排除| server 8.8.8.8:53 -blacklist-ip -check-edns -group g1
+|server-tcp|上游TCP DNS|无|可重复<br>`[ip][:port]`：服务器IP，端口可选。<br>`[-blacklist-ip]`：blacklist-ip参数指定使用blacklist-ip配置IP过滤结果。<br>`[-group [group] ...]`：DNS服务器所属组，比如office, foreign，和nameserver配套使用。<br>`[-exclude-default-group]`：将DNS服务器从默认组中排除| server-tcp 8.8.8.8:53
+|server-tls|上游TLS DNS|无|可重复<br>`[ip][:port]`：服务器IP，端口可选。<br>`[-spki-pin [sha256-pin]]`: TLS合法性校验SPKI值，base64编码的sha256 SPKI pin值<br>`[-host-name]`：TLS SNI名称<br>`[-blacklist-ip]`：blacklist-ip参数指定使用blacklist-ip配置IP过滤结果。<br>`[-group [group] ...]`：DNS服务器所属组，比如office, foreign，和nameserver配套使用。<br>`[-exclude-default-group]`：将DNS服务器从默认组中排除| server-tls 8.8.8.8:853
+|server-https|上游HTTPS DNS|无|可重复<br>`https://[host][:port]/path`：服务器IP，端口可选。<br>`[-spki-pin [sha256-pin]]`: TLS合法性校验SPKI值，base64编码的sha256 SPKI pin值<br>`[-host-name]`：TLS SNI名称<br>`[-http-host]`：http协议头主机名<br>`[-blacklist-ip]`：blacklist-ip参数指定使用blacklist-ip配置IP过滤结果。<br>`[-group [group] ...]`：DNS服务器所属组，比如office, foreign，和nameserver配套使用。<br>`[-exclude-default-group]`：将DNS服务器从默认组中排除| server-https https://cloudflare-dns.com/dns-query
+|address|指定域名IP地址|无|address /domain/[ip\|-\|-4\|-6\|#\|#4\|#6] <br>`-`表示忽略 <br>`#`表示返回SOA <br>`4`表示IPV4 <br>`6`表示IPV6| address /www.example.com/1.2.3.4
+|nameserver|指定域名使用server组解析|无|nameserver /domain/[group\|-], `group`为组名，`-`表示忽略此规则，配套server中的`-group`参数使用| nameserver /www.example.com/office
 |ipset|域名IPSET|None|ipset /domain/[ipset\|-], `-`表示忽略|ipset /www.example.com/pass
+|ipset-timeout|设置IPSET超时功能启用|auto|[yes]|ipset-timeout yes
 |bogus-nxdomain|假冒IP地址过滤|无|[ip/subnet]，可重复| bogus-nxdomain 1.2.3.4/16
 |ignore-ip|忽略IP地址|无|[ip/subnet]，可重复| ignore-ip 1.2.3.4/16
 |blacklist-ip|黑名单IP地址|无|[ip/subnet]，可重复| blacklist-ip 1.2.3.4/16
 |force-AAAA-SOA|强制AAAA地址返回SOA|no|[yes\|no]|force-AAAA-SOA yes
+|prefetch-domain|域名预先获取功能|no|[yes\|no]|prefetch-domain yes
 |dualstack-ip-selection|双栈IP优选|no|[yes\|no]|dualstack-ip-selection yes
 |dualstack-ip-selection-threshold|双栈IP优选阈值|30ms|毫秒|dualstack-ip-selection-threshold [0-1000]
 
-## [Donate](#Donate)  
+## FAQ
+
+1. SmartDNS和DNSMASQ有什么区别  
+    SMARTDNS在设计上并不是替换DNSMASQ的，SMARTDNS主要功能集中在DNS解析增强上，增强部分有：
+    * 多上游服务器并发请求，对结果进行测速后，返回最佳结果；
+    * address，ipset域名匹配采用高效算法，查询匹配更加快速高效，路由器设备依然高效。
+    * 域名匹配支持忽略特定域名，可单独匹配IPv4， IPV6，支持多样化定制。
+    * 针对广告屏蔽功能做增强，返回SOA，屏蔽广告效果更佳；
+    * IPV4，IPV6双栈IP优选机制，在双网情况下，选择最快的网络通讯。
+    * 支持最新的TLS, HTTPS协议，提供安全的DNS查询能力。
+    * DNS防抢答机制，及多种机制避免DNS污染。
+    * ECS支持，是查询结果更佳准确。
+    * IP黑名单，忽略IP机制，使域名查询更佳准确。
+    * 域名预查询，访问常用网站更加快速。
+    * 域名TTL可指定，使访问更快速。
+    * 高速缓存机制，使访问更快速。
+    * 异步日志，审计机制，在记录信息的同时不影响DNS查询性能。
+    * 域名组（group）机制，特定域名使用特定上游服务器组查询，避免隐私泄漏。
+
+1. 如何配置上游服务器最佳。  
+    smartdns有测速机制，在配置上游服务器时，建议配置多个上游DNS服务器，包含多个不同区域的服务器，但总数建议在10个左右。推荐配置  
+    * 运营商DNS。
+    * 国内公共DNS，如`119.29.29.29`, `223.5.5.5`。
+    * 国外公共DNS，如`8.8.8.8`, `8.8.4.4`。
+
+    对于特定的域名，如果有污染情况，可以启用防污染机制。
+
+1. 如何启用审计日志  
+    审计日志记录客户端请求的域名，记录信息包括，请求时间，请求IP，请求域名，请求类型，如果要启用审计日志，在配置界面配置`audit-enable yes`启用，`audit-size`, `audit-file`, `audit-num`分别配置审计日志文件大小，审计日志文件路径，和审计日志文件个数。审计日志文件将会压缩存储以节省空间。
+
+1. 如何避免隐私泄漏  
+    smartdns默认情况下，会将请求发送到所有配置的DNS服务器，若上游DNS服务器使用DNS，或记录日志，将会导致隐私泄漏。为避免隐私泄漏，请尽量：  
+    * 配置使用可信的DNS服务器。
+    * 优先使用TLS查询。
+    * 设置上游DNS服务器组。
+
+1. 如何屏蔽广告  
+    smartdns具备高性能域名匹配算法，通过域名方式过滤广告非常高效，如要屏蔽广告，只需要配置类似如下记录即可，如，屏蔽`*.ad.com`，则配置：
+
+    ```sh
+    address /ad.com/#
+    ```
+
+    域名的使后缀模式，过滤*.ad.com，`#`表示返回SOA，使屏蔽广告更加高效，如果要单独屏蔽IPV4， 或IPV6， 在`#`后面增加数字，如`#4`表示对IPV4生效。若想忽略特定子域名的屏蔽，可配置如下，如忽略`pass.ad.com`，可配置如下：
+
+    ```sh
+    address /pass.ad.com/-
+    ```
+
+1. 如何使用DNS查询分流  
+    某些情况下，需要将有些域名使用特定的DNS服务器来查询来做到DNS分流。比如。
+
+    ```sh
+    .home -> 192.168.1.1
+    .office -> 10.0.0.1
+    ```
+
+    .home 结尾的域名发送到192.168.1.1解析  
+    .office 结尾的域名发送到10.0.0.1解析
+    其他域名采用默认的模式解析。
+    这种情况的分流配置如下：
+
+    ```sh
+    #配置上游，用-group指定组名，用-exclude-default-group将服务器从默认组中排除。
+    server 192.168.1.1 -group home -exclude-default-group
+    server 10.0.0.1 -group office -exclude-default-group
+    server 8.8.8.8
+
+    #配置解析的域名
+    nameserver /.home/home
+    nameserver /.office/office
+    ```
+
+    通过上述配置即可实现DNS解析分流
+
+1. IPV4, IPV6双栈IP优选功能如何使用  
+    目前IPV6已经开始普及，但IPV6网络在速度上，某些情况下还不如IPV4，为在双栈网络下获得较好的体验，smartdns提供来双栈IP优选机制，同一个域名，若IPV4的速度远快与IPV6，那么smartdns就会阻止IPV6的解析，让PC使用IPV4访问，具体配置文件通过`dualstack-ip-selection yes`启用此功能，通过`dualstack-ip-selection-threshold [time]`来修改阈值。如果要完全禁止IPV6 AAAA记录解析，可设置`force-AAAA-SOA yes`。
+
+1. 如何提高cache效率，加快访问速度  
+    smartdns提供了域名缓存机制，对查询的域名，进行缓存，缓存时间符合DNS TTL规范。为提高缓存命中率，可采用如下措施：  
+    * 适当增大cache的记录数  
+    通过`cache-size`来设置缓存记录数。  
+    查询压力大的环境下，并且有内存大的机器的情况下，可适当调大。  
+
+    * 适当设置最小TTL值  
+    通过`rr-ttl-min`将最低DNS TTL时间设置为一个合理值，延长缓存时间。  
+    建议是超时时间设置在10～30分钟，避免服务器域名变化时，查询到失效域名。
+
+    * 开启域名预获取功能  
+    通过`prefetch-domain yes`来启用域名预先获取功能，提高查询命中率。  
+    配合上述ttl超时时间，smartdns将在域名ttl即将超时使，再次发送查询请求，并缓存查询结果供后续使用。频繁访问的域名将会持续缓存。此功能将在空闲时消耗更多的CPU。
+
+## Donate
 
 如果你觉得此项目对你有帮助，请捐助我们，以使项目能持续发展，更加完善。
 
